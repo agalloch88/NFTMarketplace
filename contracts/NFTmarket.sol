@@ -47,7 +47,7 @@ contract NFTMarket is ReentrancyGuard {
         return listingPrice;
     }
 
-// function to create a new NFT on the marketplace
+    // function to create a new NFT on the marketplace
     function createMarketItem(
         address nftContract,
         uint256 tokenId,
@@ -82,7 +82,7 @@ contract NFTMarket is ReentrancyGuard {
         );
     }
 
-// function to buy a NFT on the marketplace, transfer ownership, and transfer commission
+    // function to buy a NFT on the marketplace, transfer ownership, and transfer commission
     function createMarketSale(
         address nftContract,
         uint256 itemId
@@ -99,7 +99,7 @@ contract NFTMarket is ReentrancyGuard {
         payable(owner).transfer(listingPrice);
     }
 
-// public function to display unsold items on the marketplace
+    // public function to display unsold items on the marketplace
     function fetchMarketItems() public view returns (MarketItem[] memory) {
         uint itemCount = _itemIds.current();
         uint unsoldItemCount = _itemIds.current() - _itemsSold.current();
@@ -118,7 +118,7 @@ contract NFTMarket is ReentrancyGuard {
         return items;
     }
 
-//function to return all purchased NFTs of the user for FE use
+    // function to return all purchased NFTs of the user for FE use
     function fetchMyNFTs() public view returns (MarketItem[] memory) {
         uint totalItemCount = _itemIds.current();
         uint itemCount = 0;
@@ -133,6 +133,30 @@ contract NFTMarket is ReentrancyGuard {
         MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i + 1].owner == msg.sender) {
+                uint currentId = idToMarketItem[i + 1].itemId;
+                MarketItem storage currentItem = idToMarketItem[currentId];
+                items[currentIndex] = currentItem;
+                currentIndex++;
+            }
+        }
+        return items;
+    }
+
+    // function to return all NFTs a user created on the marketplace
+    function fetchItemsCreated() public view returns (MarketItem[] memory) {
+        uint totalItemCount = _itemIds.current();
+        uint itemCount = 0;
+        uint currentIndex = 0;
+
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (idToMarketItem[i + 1].seller == msg.sender) {
+                itemCount++;
+            }
+        }
+
+        MarketItem[] memory items = new MarketItem[](itemCount);
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (idToMarketItem[i + 1].seller == msg.sender) {
                 uint currentId = idToMarketItem[i + 1].itemId;
                 MarketItem storage currentItem = idToMarketItem[currentId];
                 items[currentIndex] = currentItem;
